@@ -2,7 +2,8 @@
 
 using namespace ds;
 
-namespace ds {
+namespace ds
+{
     ostream& operator << (ostream& os, const Pair& p)
     {
         os << "(" << p.levels << ", " << p.id << ")";

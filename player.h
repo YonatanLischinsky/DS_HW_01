@@ -13,14 +13,17 @@ class Player
         int id;
         int level;
         std::shared_ptr<Group> player_group;
+
     public:
-        Player(int id, int lvl, std::shared_ptr<Group> g); //C'tor
-        Player(Player& p); //Copy c'tor
+        Player(int id, int lvl, std::shared_ptr<Group> g) : id(id), level(lvl), player_group(g)
+        { } //C'tor
+
+        Player(Player& p) = default; //Copy c'tor
         ~Player() = default; //D'tor
 
         friend class PlayersManager;
 };
 
-Player::Player(int id, int lvl, std::shared_ptr<Group> g) : id(id), level(lvl), player_group(g) { }
+// Player::Player(int id, int lvl, std::shared_ptr<Group> g) : id(id), level(lvl), player_group(g) { }
 
 #endif

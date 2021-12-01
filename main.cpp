@@ -13,15 +13,15 @@ using namespace ds;
 /***************************************************************************/
 class Pair
 {
-    public:
-        int levels;
-        int id;
+public:
+    int levels;
+    int id;
 
-        Pair(int lvl, int id) : levels(lvl), id(id)
-        { }
-        friend bool operator < (const Pair& a, const Pair& b);
-        friend bool operator == (const Pair& a, const Pair& b);
-        friend ostream& operator << (ostream& os, const Pair& p);
+    Pair(int x) : levels(0), id(0) { }
+    Pair(int lvl, int id) : levels(lvl), id(id) { }
+    friend bool operator < (const Pair& a, const Pair& b);
+    friend bool operator == (const Pair& a, const Pair& b);
+    friend ostream& operator << (ostream& os, const Pair& p);
 };
 
 ostream& operator << (ostream& os, const Pair& p)
@@ -51,25 +51,20 @@ int main(int argc, const char** argv)
     cout << "Main started !" << endl;
 
 
-    int numOfItems = 3;
-    Avl<int,Pair> tree = Avl<int, Pair>();
+    int numOfItems = 10;
+    Avl<int, Pair> tree = Avl<int, Pair>();
 
-    //for (int i = numOfItems; i > 0; i--)
-    //{
-    //    cout << "#" << i << " = " << (tree.insert(i, i) == 0 ? "OK" : "Fail")<< endl;
-    //}
-
-    tree.insert(55, Pair(4, 1));
-    tree.insert(109, Pair(4, 2));
-    tree.insert(203, Pair(4, 3));
-
+    for (int i = 1; i <= numOfItems; i++)
+    {
+        cout << "#" << i << " = " << (tree.insert(i * 7, Pair(i % (numOfItems / 2), i)) == 0 ? "OK" : "Fail") << endl;
+    }
     cout << endl << "Inserted " << numOfItems << " items !" << endl;
 
     cout << "Print tree keys in-order: (Ascending)" << endl;
     tree.printInOrder(false);
 
-    cout << endl << "Print tree keys in-order: (Descending)" << endl;
-    tree.printInOrder(true);
+    cout << "Max key is: " << tree.GetMaxKey() << endl;
+    cout << "Data of " << tree.GetMaxKey() << " is: " << tree.getData(tree.GetMaxKey()) << endl;
 
     cout << "Main Finished !" << endl;
     return 0;

@@ -15,9 +15,11 @@ namespace ds {
     StatusType Group::AddPlayer(std::shared_ptr<Player> p, Pair key)
     {
         StatusType st = players.insert(p, key);
-        if (st == SUCCESS) {
+        if (st == SUCCESS)
+        {
             count++;
-            if ((key.levels > max_level) || (key.levels == max_level && key.id < id_max_level)) {
+            if ((key.levels > max_level) || (key.levels == max_level && key.id < id_max_level))
+            {
                 max_level = key.levels;
                 id_max_level = key.id;
             }
@@ -29,19 +31,21 @@ namespace ds {
     StatusType Group::RemovePlayer(Pair p)
     {
         StatusType st = players.remove(p); //Remove function in Avl
-        if (st == SUCCESS) {
+        if (st == SUCCESS)
+        {
             count--;
-            if (count == 0) {
+            if (count == 0)
+            {
                 max_level = -1;
                 id_max_level = -1;
             }
-            else if (key.id == id_max_level)) {
+            else if (key.id == id_max_level)
+            {
                 Pair max = players.GetMaxKey(); //update the max in group - GetMaxKey in AVL
                 max_level = max.level;
                 id_max_level = max.id;
             }
         }
-
         return st;
     }
 }

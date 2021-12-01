@@ -5,10 +5,12 @@
 #include "group.h"
 #include "player.h"
 #include "avl.h"
-#include "pair.h" //Need to create this
+#include "pair.h"
 
-namespace ds {
-    class PlayersManager {
+namespace ds
+{
+    class PlayersManager
+    {
         private:
             Avl<std::shared_ptr<Player>, int> players_by_id;
             Avl<std::shared_ptr<Player>, Pair> players_by_level;
@@ -31,7 +33,7 @@ namespace ds {
             StatusType GetHighestLevel(int GroupID, int *PlayerID);
             StatusType GetAllPlayersByLevel(int GroupID, int **Players, int *numOfPlayers);
             StatusType GetGroupsHighestLevel(int numOfGroups, int **Players);
-            void Quit(void** DS); //why pointer to pointer
+            void Quit(void** DS); //why pointer to pointer //yontan: nobody fucking know :O
     };
 }
 

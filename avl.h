@@ -40,9 +40,9 @@ namespace ds
         //template<class K>
         K key;
 
-        std::shared_ptr<Node<T,K>> left;
-        std::shared_ptr<Node<T,K>> right;
-        std::shared_ptr<Node<T,K>> father;
+        std::shared_ptr<Node<T, K>> left;
+        std::shared_ptr<Node<T, K>> right;
+        std::shared_ptr<Node<T, K>> father;
 
         int balance_factor;
         int height;
@@ -51,7 +51,7 @@ namespace ds
         void UpdateHeight();
         int max(int a, int b); //only used for calculating heights - keep in int !
 
-        friend class Avl<T,K>;
+        friend class Avl<T, K>;
     };
 
 
@@ -61,24 +61,24 @@ namespace ds
 
     /* Node Constructor */
     template<class T, class K>
-    Node<T,K>::Node(T data, K key) : data(data), key(key), left(nullptr), right(nullptr), father(nullptr), balance_factor(0), height(0)
+    Node<T, K>::Node(T data, K key) : data(data), key(key), left(nullptr), right(nullptr), father(nullptr), balance_factor(0), height(0)
     {
     }
 
     /* Node Copy constructor */
     template<class T, class K>
-    Node<T,K>::Node(const Node& node) : data(node.data), key(node.key), left(node.left), right(node.right), father(node.father)
+    Node<T, K>::Node(const Node& node) : data(node.data), key(node.key), left(node.left), right(node.right), father(node.father)
     {
     }
 
     /* Destructor */
     template<class T, class K>
-    Node<T,K>::~Node()
+    Node<T, K>::~Node()
     {
     }
 
     template<class T, class K>
-    void Node<T,K>::UpdateBF()
+    void Node<T, K>::UpdateBF()
     {
         int hL, hR;
 
@@ -96,7 +96,7 @@ namespace ds
     }
 
     template<class T, class K>
-    void Node<T,K>::UpdateHeight()
+    void Node<T, K>::UpdateHeight()
     {
         int Hl = -1, Hr = -1;
         if (this->left == nullptr)
@@ -113,15 +113,15 @@ namespace ds
     }
 
     template<class T, class K>
-    int Node<T,K>::max(int a, int b)
+    int Node<T, K>::max(int a, int b)
     {
         return (a >= b ? a : b);
     }
 
 #pragma endregion
 
-
 #pragma region Avl Tree
+
     template<class T, class K>
     class Avl
     {
@@ -130,18 +130,22 @@ namespace ds
         ~Avl(); //destructor
 
         StatusType insert(T data, K key);
+        K GetMaxKey();
+        T getData(K key);
         void printInOrder(bool reverse);
 
     private:
-        std::shared_ptr<Node<T,K>> root;
+        std::shared_ptr<Node<T, K>> root;
 
         //private helper functions:
 
-        void AfterInsertCheckTree(std::shared_ptr< Node<T,K> > v);
-        void Gilgol(std::shared_ptr< Node<T,K> > r, GILGOL_TYPE type);
-        std::shared_ptr< Node<T,K> > binarySearch(K insert_key, std::shared_ptr< Node<T,K> > sub_root, INSERT_DIRECTION* dir);
-        void recInOrder(std::shared_ptr<Node<T,K>> r, bool reverse);
-        void deleteTree(std::shared_ptr<Node<T,K>> r);
+        void AfterInsertCheckTree(std::shared_ptr< Node<T, K> > v);
+        void Gilgol(std::shared_ptr< Node<T, K> > r, GILGOL_TYPE type);
+        std::shared_ptr< Node<T, K> > binarySearch(K insert_key, std::shared_ptr< Node<T, K> > sub_root, INSERT_DIRECTION* dir);
+        void recInOrder(std::shared_ptr<Node<T, K>> r, bool reverse);
+        void deleteTree(std::shared_ptr<Node<T, K>> r);
+        K recGetMaxKey(std::shared_ptr<Node<T, K>> n);
+        std::shared_ptr< Node<T, K> > findNode(std::shared_ptr<Node<T, K>> sub_root, K key);
 
     };
 
@@ -150,21 +154,21 @@ namespace ds
 
     /* AVL Constructor */
     template<class T, class K>
-    Avl<T,K>::Avl() : root(nullptr)
+    Avl<T, K>::Avl() : root(nullptr)
     {
     }
 
     /* Destructor */
     template<class T, class K>
-    Avl<T,K>::~Avl()
+    Avl<T, K>::~Avl()
     {
         deleteTree(this->root);
     }
 
-    template<class T,class K>
-    void Avl<T,K>::deleteTree(std::shared_ptr<Node<T,K>> r)
+    template<class T, class K>
+    void Avl<T, K>::deleteTree(std::shared_ptr<Node<T, K>> r)
     {
-        if(r == nullptr)
+        if (r == nullptr)
             return;
 
         deleteTree(r->left);
@@ -176,14 +180,14 @@ namespace ds
     }
 
     template<class T, class K>
-    void Avl<T,K>::printInOrder(bool reverse)
+    void Avl<T, K>::printInOrder(bool reverse)
     {
         recInOrder(this->root, reverse);
         std::cout << std::endl;
     }
 
     template<class T, class K>
-    void Avl<T,K>::recInOrder(std::shared_ptr<Node<T,K>> r, bool reverse)
+    void Avl<T, K>::recInOrder(std::shared_ptr<Node<T, K>> r, bool reverse)
     {
         if (r == nullptr)
             return;
@@ -199,9 +203,9 @@ namespace ds
     }
 
     template<class T, class K>
-    StatusType Avl<T,K>::insert(T data, K key)
+    StatusType Avl<T, K>::insert(T data, K key)
     {
-        std::shared_ptr< Node<T,K> > nodeToInsert(new Node<T,K>(data, key));
+        std::shared_ptr< Node<T, K> > nodeToInsert(new Node<T, K>(data, key));
         if (nodeToInsert == nullptr)
             throw std::bad_alloc();
 
@@ -213,7 +217,7 @@ namespace ds
 
         //Check if already exists:
         INSERT_DIRECTION dir;
-        std::shared_ptr< Node<T,K> > father = binarySearch(key, this->root, &dir);
+        std::shared_ptr< Node<T, K> > father = binarySearch(key, this->root, &dir);
         if (father == nullptr) //Key already exists !
         {
             return FAILURE;
@@ -236,11 +240,11 @@ namespace ds
     }
 
     template<class T, class K>
-    void Avl<T,K>::AfterInsertCheckTree(std::shared_ptr< Node<T,K> > v)
+    void Avl<T, K>::AfterInsertCheckTree(std::shared_ptr< Node<T, K> > v)
     {
         while (v != this->root)
         {
-            std::shared_ptr< Node<T,K> > p = v->father;
+            std::shared_ptr< Node<T, K> > p = v->father;
             if (p->height >= v->height + 1)
                 return;
 
@@ -279,16 +283,16 @@ namespace ds
     }
 
     template<class T, class K>
-    void Avl<T,K>::Gilgol(std::shared_ptr< Node<T,K> > r, GILGOL_TYPE type)
+    void Avl<T, K>::Gilgol(std::shared_ptr< Node<T, K> > r, GILGOL_TYPE type)
     {
         switch (type)
         {
         case LL:
         {
-            std::shared_ptr< Node<T,K> > tempA = r->left;
+            std::shared_ptr< Node<T, K> > tempA = r->left;
 
             r->left = tempA->right;
-            if(tempA->right != nullptr)
+            if (tempA->right != nullptr)
                 tempA->right->father = r;
             tempA->right = r;
             tempA->father = r->father;
@@ -317,10 +321,10 @@ namespace ds
 
         case RR:
         {
-            std::shared_ptr< Node<T,K> > tempA = r->right;
+            std::shared_ptr< Node<T, K> > tempA = r->right;
 
             r->right = tempA->left;
-            if(tempA->left != nullptr)
+            if (tempA->left != nullptr)
                 tempA->left->father = r;
             tempA->left = r;
             tempA->father = r->father;
@@ -348,8 +352,8 @@ namespace ds
 
         case LR:
         {
-            std::shared_ptr< Node<T,K> > tempA = r->left;
-            std::shared_ptr< Node<T,K> > tempB = r->left->right;
+            std::shared_ptr< Node<T, K> > tempA = r->left;
+            std::shared_ptr< Node<T, K> > tempB = r->left->right;
             r->left = tempB->right;
             if (tempB->right != nullptr)
                 tempB->right->father = r;
@@ -374,6 +378,7 @@ namespace ds
                     r->father->left = tempB;
                 }
             }
+            tempB->father = r->father;
             r->father = tempB; //Keep this under the if/else
 
             tempA->UpdateHeight();
@@ -387,14 +392,14 @@ namespace ds
 
         case RL:
         {
-            std::shared_ptr< Node<T,K> > tempA = r->right;
-            std::shared_ptr< Node<T,K> > tempB = r->right->left;
+            std::shared_ptr< Node<T, K> > tempA = r->right;
+            std::shared_ptr< Node<T, K> > tempB = r->right->left;
             r->right = tempB->left;
-            if(tempB->left != nullptr)
+            if (tempB->left != nullptr)
                 tempB->left->father = r;
 
             tempA->left = tempB->right;
-            if(tempB->right != nullptr)
+            if (tempB->right != nullptr)
                 tempB->right->father = tempA;
 
             tempB->right = tempA;
@@ -413,6 +418,7 @@ namespace ds
                     r->father->left = tempB;
                 }
             }
+            tempB->father = r->father;
             r->father = tempB; //Keep this under the if/else
 
             tempA->UpdateHeight();
@@ -427,7 +433,7 @@ namespace ds
     }
 
     template<class T, class K>
-    std::shared_ptr< Node<T,K> > Avl<T,K>::binarySearch(K insert_key, std::shared_ptr< Node<T,K> > sub_root, INSERT_DIRECTION* dir)
+    std::shared_ptr< Node<T, K> > Avl<T, K>::binarySearch(K insert_key, std::shared_ptr< Node<T, K> > sub_root, INSERT_DIRECTION* dir)
     {
         if (dir == nullptr)
         {
@@ -464,7 +470,53 @@ namespace ds
         }
     }
 
+    template<class T, class K>
+    K Avl<T, K>::GetMaxKey()
+    {
+        return recGetMaxKey(this->root);
+    }
+
+    template<class T, class K>
+    K Avl<T, K>::recGetMaxKey(std::shared_ptr<Node<T, K>> n)
+    {
+        if (n == nullptr)
+            return NULL;
+
+        if (n->right == nullptr)
+            return n->key;
+
+        return recGetMaxKey(n->right);
+    }
+
+    template<class T, class K>
+    T Avl<T, K>::getData(K key)
+    {
+        std::shared_ptr<Node<T, K>> n = findNode(this->root, key);
+        if (n == nullptr)
+            return NULL;
+
+        return n->data;
+    }
+
+    template<class T, class K>
+    std::shared_ptr<Node<T, K>> Avl<T, K>::findNode(std::shared_ptr<Node<T, K>> sub_root, K key)
+    {
+        if (sub_root == nullptr)
+            return nullptr;
+
+        if (key == sub_root->key)
+        {
+            return sub_root;
+        }
+
+        if (key < sub_root->key)
+            return findNode(sub_root->left, key);
+
+        return findNode(sub_root->right, key);
+    }
+
 #pragma endregion
+
 }
 
 #endif

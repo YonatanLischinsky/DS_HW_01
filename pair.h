@@ -1,7 +1,8 @@
 #ifndef PAIR_H
 #define PAIR_H
 
-namespace ds {
+namespace ds
+{
     class Pair
     {
         public:

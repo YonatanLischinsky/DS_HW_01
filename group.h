@@ -14,6 +14,7 @@ class Group
         int id_max_level;
         Avl<std::shared_ptr<Player>, Pair> players; 
         int count;
+        
     public:
         Group(int id); //C'tor
         Group(const Group& group); //Copy c'tor
