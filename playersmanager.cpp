@@ -17,13 +17,15 @@ namespace ds
        not_empty_groups = Avl<std::shared_ptr<Player>, int> ();
     }
 
-    PlayersManager::PlayersManager(PlayersManager& pm) { } //Copy c'tor - ??
-
     StatusType PlayersManager::AddGroup(int GroupID)
     {
         if (GroupID <= 0)
         {
             return INVALID_INPUT;
+        }
+
+        if (groups.search(GroupID)) {
+            return FAILURE;
         }
 
         std::shared_ptr<Group> new_group(new Group(GroupID));
@@ -42,16 +44,15 @@ namespace ds
             return INVALID_INPUT;
         }
 
-        //need to write search
         if (players_by_id.search(PlayerID) || !(groups.search(GroupID)))
         {
             return FAILURE;
         }
 
         //get the group's ptr
-        std::shared_ptr<Group> group_ptr = groups.getData(GroupID); //need to write getData
-        std::shared_ptr<Player> new_player(new Player(PlayerID, Level, group_ptr));
-        Pair player_key = Pair(Level, PlayerID);
+        std::shared_ptr<Group> group_ptr = groups.getData(GroupID);
+        std::shared_ptr<Player> new_player (new Player(PlayerID, Level, group_ptr));
+        Pair player_key = Pair(Level, PlayerID); //maybe use 'new' and use pointers.
         if(new_player == nullptr)
         {
             return ALLOCATION_ERROR;
@@ -117,8 +118,6 @@ namespace ds
             return st;
         }
 
-        int cur_count = pg->count;
-
         //Remove from player's group tree
         st = pg->RemovePlayer(player_key);
         if(st != SUCCESS) {
@@ -145,10 +144,7 @@ namespace ds
 
         if (PlayerID == id_max_level)
         {
-
-            //yonatan: should be: ***pg->players.GetMaxKey() ???
-            Pair max = pg->players.GetMaxKey(); //update the max in group - GetMaxKey in AVL
-
+            Pair max = players_by_level.GetMaxKey(); //update the max in group - GetMaxKey in AVL
 
             max_level = max.level;
             id_max_level = max.id;
@@ -182,22 +178,18 @@ namespace ds
             return FAILURE;
         }
 
-        std::shared_ptr<Player> p = players_by_id.getData(PlayerID);
+        std::shared_ptr<Player> p = players_by_id.getData(PlayerID); //log n
         std::shared_ptr<Group> g = p->player_group;
         int new_level = p->level + LevelIncrease;
         Pair old_key = Pair(p->level, PlayerID);
         Pair new_key = Pair(new_level, PlayerID);
 
-        //need to validate?
         g->RemovePlayer(old_key);
-        players_by_id.remove(PlayerID); //yonatan: no need to remove from id tree.
         players_by_level.remove(old_key);
 
         p->level = new_level;
         g->AddPlayer(p, new_key);
-        players_by_id.insert(p, PlayerID); // yonatan: no need to remove from id tree.
-        players_by_level.insert(p, new_key);
-
+        return players_by_level.insert(p, new_key);
     }
 
     StatusType PlayersManager::GetHighestLevel(int GroupID, int *PlayerID)
@@ -222,24 +214,38 @@ namespace ds
         return SUCCESS;
     }
 
-    //need to complete
     StatusType PlayersManager::GetAllPlayersByLevel(int GroupID, int **Players, int *numOfPlayers)
     {
         if (GroupID == 0 || Players == nullptr || numOfPlayers == nullptr)
         {
             return INVALID_INPUT;
         }
+
         if (GroupID < 0)
         {
             *numOfPlayers = count;
             *Players = new int[*numOfPlayers]; //syntax??
-            if (*Players == nullptr) {
+            if (*Players == nullptr)
+            {
                 return ALLOCATION_ERROR;
             }
 
-            //need to insert all players from players_by_level
+           
+            Pair arr[] = new Pair[count];
+            if(arr == nullptr)
+                return ALLOCATION_ERROR;
+            players_by_level.reverseInOrderFillArr(arr);
+
+            for(int i = 0; i < count; i++)
+            {
+                *Players[i] = arr[i].id;
+            }
+            delete arr;
+            return SUCCESS;
         }
-        else if (!(groups.search(GroupID))) {
+
+        if (!(groups.search(GroupID)))
+        {
             return FAILURE;
         }
 
@@ -247,7 +253,18 @@ namespace ds
         *numOfPlayers = g->count;
         *Players = new int[*numOfPlayers]; //syntax??
 
-        //need to insert all players from group's players tree
+        Pair arr[] = new Pair[g->count];
+        if(arr == nullptr)
+            return ALLOCATION_ERROR;
+
+        g->players.reverseInOrderFillArr(arr);
+
+        for(int i = 0; i < g->count; i++)
+        {
+            *Players[i] = arr[i].id;
+        }
+        delete arr;
+        return SUCCESS;
     }
 
     //need to complete
@@ -265,8 +282,18 @@ namespace ds
         if (*Players == nullptr) {
             return ALLOCATION_ERROR;
         }
+        std::shared_ptr<Group> arr[] = new std::shared_ptr<Group>[numOfGroups];
+        if(arr == nullptr)
+            return ALLOCATION_ERROR;
+        not_empty_groups.InOrderFillArrData(arr, numOfGroups);
 
-        //need to insert the groups from not_empty_groups
+        for(int i = 0; i < numOfGroups; i++)
+        {
+            *Players[i] = arr[i]->id_max_level;
+        }
+        
+        delete arr;
+        return SUCCESS;
     }
 
     void PlayersManager::Quit(void** DS) //why pointer to pointer

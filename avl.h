@@ -135,7 +135,8 @@ namespace ds
         T getData(K key);
         void printInOrder(bool reverse);
         bool search(K key);
-
+        void reverseInOrderFillArr(K arr[]);
+        void InOrderFillArrData(T arr[], int counter);
     private:
         std::shared_ptr<Node<T, K>> root;
 
@@ -150,6 +151,8 @@ namespace ds
         std::shared_ptr< Node<T, K> > findNode(std::shared_ptr<Node<T, K>> sub_root, K key);
         void HandleOneSonRemove(std::shared_ptr<Node<T, K>> nodeToRemove);
         std::shared_ptr<Node<T, K>> binaryTreeRemoveAlgo(std::shared_ptr<Node<T, K>> nodeToRemove);
+        void reverseInOrderFillArr_rec(K arr[], std::shared_ptr<Node<T,K>> n, int* i);
+        void InOrderFillArrData_rec(T arr[], std::shared_ptr<Node<T,K>> n, int* i, int count);
 
     };
 
@@ -668,6 +671,49 @@ namespace ds
         std::shared_ptr<Node<T, K>> n = findNode(root, key);
         return (n != nullptr);
     }
+
+    template<class T, class K>
+    void Avl<T, K>::reverseInOrderFillArr(K arr[])
+    {
+        int i = 0;
+        reverseInOrderFillArr_rec(arr, root, &i);
+    }
+
+    template<class T, class K>
+    void Avl<T, K>::reverseInOrderFillArr_rec(K arr[], std::shared_ptr<Node<T,K>> n, int* i)
+    {
+        if(n == nullptr)
+            return;
+
+        reverseInOrderFillArr_rec(arr, n->right, i);
+
+        arr[*i] = n->key;
+        *i = (*i) + 1;
+
+        reverseInOrderFillArr_rec(arr, n->left, i);
+    }
+
+    template<class T, class K>
+    void Avl<T, K>::InOrderFillArrData(T arr[], int counter)
+    {
+        int i = 0;
+        InOrderFillArrData_rec(arr, root, &i, counter);
+    }
+
+    template<class T, class K>
+    void Avl<T, K>::InOrderFillArrData_rec(T arr[], std::shared_ptr<Node<T,K>> n, int* i, int count)
+    {
+        if(n == nullptr || *i >= count)
+            return;
+
+        reverseInOrderFillArr_rec(arr, n->left, i);
+
+        arr[*i] = n->key;
+        *i = (*i) + 1;
+
+        reverseInOrderFillArr_rec(arr, n->right, i);
+    }
+
 
 #pragma endregion
 
