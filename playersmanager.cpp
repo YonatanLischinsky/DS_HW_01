@@ -162,6 +162,13 @@ namespace ds
     //need to complete
     StatusType ReplaceGroup(int GroupID, int ReplacementID)
     {
+        if (GroupID <= 0 || ReplacementID <= 0) {
+            return INVALID_INPUT;
+        }
+        if(!(groups.serach(GroupID)) || !(groups.serach(ReplacementID))) { //logk
+            return FAILURE;
+        }
+
         return SUCCESS;
     }
 
