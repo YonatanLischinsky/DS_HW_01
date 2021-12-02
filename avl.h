@@ -130,9 +130,11 @@ namespace ds
         ~Avl(); //destructor
 
         StatusType insert(T data, K key);
+        StatusType remove(K key);
         K GetMaxKey();
         T getData(K key);
         void printInOrder(bool reverse);
+        bool search(K key);
 
     private:
         std::shared_ptr<Node<T, K>> root;
@@ -146,6 +148,8 @@ namespace ds
         void deleteTree(std::shared_ptr<Node<T, K>> r);
         K recGetMaxKey(std::shared_ptr<Node<T, K>> n);
         std::shared_ptr< Node<T, K> > findNode(std::shared_ptr<Node<T, K>> sub_root, K key);
+        void HandleOneSonRemove(std::shared_ptr<Node<T, K>> nodeToRemove);
+        std::shared_ptr<Node<T, K>> binaryTreeRemoveAlgo(std::shared_ptr<Node<T, K>> nodeToRemove);
 
     };
 
@@ -237,6 +241,149 @@ namespace ds
         AfterInsertCheckTree(nodeToInsert);
 
         return SUCCESS;
+    }
+
+    template<class T, class K>
+    StatusType Avl<T, K>::remove(K key)
+    {
+        std::shared_ptr<Node<T, K>> nodeToRemove = findNode(root, key);
+        if (nodeToRemove == nullptr)
+            return FAILURE; // maybe return fail? if got here, there was no key to remove...
+
+        std::shared_ptr<Node<T, K>> father = binaryTreeRemoveAlgo(nodeToRemove);
+        if (father == nullptr)
+            return SUCCESS;
+
+        int initHeight = father->height;
+        while (father != nullptr)
+        {
+            father->UpdateHeight();
+            father->UpdateBF();
+
+            //Do Gilgol:
+            switch (father->balance_factor)
+            {
+            case 2:
+                if (father->left->balance_factor >= 0)
+                {
+                    Gilgol(father, LL);
+                }
+                else if (father->left->balance_factor == -1) //maybe else here ?...
+                {
+                    Gilgol(father, LR);
+                }
+                break;
+
+            case -2:
+                if (father->right->balance_factor <= 0)
+                {
+                    Gilgol(father, RR);
+                }
+                else if (father->right->balance_factor == 1) //maybe else here ?...
+                {
+                    Gilgol(father, RL);
+                }
+                break;
+
+            default:
+                break;
+            }
+
+            if (initHeight == father->height)
+                break;
+            father = father->father;
+        }
+
+        return SUCCESS;
+    }
+
+    template<class T, class K>
+    std::shared_ptr<Node<T, K>> Avl<T, K>::binaryTreeRemoveAlgo(std::shared_ptr<Node<T, K>> nodeToRemove)
+    {
+        if (nodeToRemove->height == 0)// leaf
+        {
+            if (root == nodeToRemove)
+            {
+                deleteTree(root);
+                return nullptr;
+            }
+
+            if (nodeToRemove->father->left == nodeToRemove)
+                nodeToRemove->father->left = nullptr;
+            else
+                nodeToRemove->father->right = nullptr;
+
+            return nodeToRemove->father;
+        }
+        else //not a leaf.
+        {
+            int countSons = 0;
+            countSons += (nodeToRemove->left != nullptr);
+            countSons += (nodeToRemove->right != nullptr);
+            if (countSons == 1)
+            {
+                HandleOneSonRemove(nodeToRemove);
+                return nodeToRemove->father;
+            }
+            else //2 sons
+            {
+                std::shared_ptr<Node<T, K>> w = nodeToRemove->right;
+                while (w->left != nullptr)
+                {
+                    w = w->left;
+                }
+
+                //swap between nodeToRemove and w.
+                T tempData = nodeToRemove->data;
+                K tempKey = nodeToRemove->key;
+
+                nodeToRemove->key = w->key;
+                nodeToRemove->data = w->data;
+
+                w->key = tempKey;
+                w->data = tempData;
+
+                return binaryTreeRemoveAlgo(w);
+            }
+        }
+    }
+
+    template<class T, class K>
+    void Avl<T, K>::HandleOneSonRemove(std::shared_ptr<Node<T, K>> nodeToRemove)
+    {
+        if (nodeToRemove->left == nullptr && nodeToRemove->right != nullptr)
+        {
+            if (nodeToRemove->father != nullptr)
+            {
+                if (nodeToRemove->father->left == nodeToRemove)
+                    nodeToRemove->father->left = nodeToRemove->right;
+                else
+                    nodeToRemove->father->right = nodeToRemove->right;
+            }
+            nodeToRemove->right->father = nodeToRemove->father;
+            if (root == nodeToRemove)
+                root = nodeToRemove->right;
+        }
+        else if (nodeToRemove->left != nullptr && nodeToRemove->right == nullptr)
+        {
+            if (nodeToRemove->father != nullptr)
+            {
+                if (nodeToRemove->father->left == nodeToRemove)
+                    nodeToRemove->father->left = nodeToRemove->left;
+                else
+                    nodeToRemove->father->right = nodeToRemove->left;
+            }
+            nodeToRemove->left->father = nodeToRemove->father;
+            
+            if (root == nodeToRemove)
+                root = nodeToRemove->left;
+            
+        }
+
+        nodeToRemove->left = nullptr;
+        nodeToRemove->right = nullptr;
+        nodeToRemove->father = nullptr;
+
     }
 
     template<class T, class K>
@@ -513,6 +660,13 @@ namespace ds
             return findNode(sub_root->left, key);
 
         return findNode(sub_root->right, key);
+    }
+
+    template<class T, class K>
+    bool Avl<T, K>::search(K key)
+    {
+        std::shared_ptr<Node<T, K>> n = findNode(root, key);
+        return (n != nullptr);
     }
 
 #pragma endregion

@@ -15,12 +15,11 @@ namespace ds
        players_by_level = Avl<std::shared_ptr<Player>, Pair)> ();
        groups = Avl<std::shared_ptr<Player>, int> ();
        not_empty_groups = Avl<std::shared_ptr<Player>, int> ();
-
     }
 
     PlayersManager::PlayersManager(PlayersManager& pm) { } //Copy c'tor - ??
 
-    PlayersManager::StatusType AddGroup(int GroupID)
+    StatusType PlayersManager::AddGroup(int GroupID)
     {
         if (GroupID <= 0)
         {
@@ -36,7 +35,7 @@ namespace ds
         return groups.insert(new_group, GroupID);
     }
 
-    StatusType AddPlayer(int PlayerID, int GroupID, int Level)
+    StatusType PlayersManager::AddPlayer(int PlayerID, int GroupID, int Level)
     {
         if (PlayerID <=0 || GroupID <= 0 || Level < 0)
         {
@@ -101,7 +100,7 @@ namespace ds
         return SUCCESS;
     }
 
-    StatusType RemovePlayer(int PlayerID)
+    StatusType PlayersManager::RemovePlayer(int PlayerID)
     {
         if (PlayerID <= 0)
         {
@@ -160,19 +159,19 @@ namespace ds
     }
 
     //need to complete
-    StatusType ReplaceGroup(int GroupID, int ReplacementID)
+    StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
     {
         if (GroupID <= 0 || ReplacementID <= 0) {
             return INVALID_INPUT;
         }
-        if(!(groups.serach(GroupID)) || !(groups.serach(ReplacementID))) { //logk
+        if(!(groups.search(GroupID)) || !(groups.search(ReplacementID))) { //logk
             return FAILURE;
         }
 
         return SUCCESS;
     }
 
-    StatusType IncreaseLevel(int PlayerID, int LevelIncrease)
+    StatusType PlayersManager::IncreaseLevel(int PlayerID, int LevelIncrease)
     {
         if (PlayerID <= 0 || LevelIncrease <= 0)
         {
@@ -201,7 +200,7 @@ namespace ds
 
     }
 
-    StatusType GetHighestLevel(int GroupID, int *PlayerID)
+    StatusType PlayersManager::GetHighestLevel(int GroupID, int *PlayerID)
     {
         if (PlayerID == nullptr || GroupID == 0)
         {
@@ -224,7 +223,7 @@ namespace ds
     }
 
     //need to complete
-    StatusType GetAllPlayersByLevel(int GroupID, int **Players, int *numOfPlayers)
+    StatusType PlayersManager::GetAllPlayersByLevel(int GroupID, int **Players, int *numOfPlayers)
     {
         if (GroupID == 0 || Players == nullptr || numOfPlayers == nullptr)
         {
@@ -252,7 +251,7 @@ namespace ds
     }
 
     //need to complete
-    StatusType GetGroupsHighestLevel(int numOfGroups, int **Players)
+    StatusType PlayersManager::GetGroupsHighestLevel(int numOfGroups, int **Players)
     {
         if (numOfGroups < 1 || Players == nullptr)
         {
@@ -270,7 +269,7 @@ namespace ds
         //need to insert the groups from not_empty_groups
     }
 
-    void Quit(void** DS) //why pointer to pointer
+    void PlayersManager::Quit(void** DS) //why pointer to pointer
     {
         
     }
