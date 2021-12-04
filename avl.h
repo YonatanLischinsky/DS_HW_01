@@ -708,7 +708,7 @@ namespace ds
 
         reverseInOrderFillArr_rec(arr, n->left, i);
 
-        arr[*i] = n->key;
+        arr[*i] = n->data;
         *i = (*i) + 1;
 
         reverseInOrderFillArr_rec(arr, n->right, i);

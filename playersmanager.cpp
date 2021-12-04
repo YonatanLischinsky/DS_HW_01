@@ -164,6 +164,34 @@ namespace ds
             return FAILURE;
         }
 
+        std::shared_ptr<Group> group_to_delete = groups.getData(GroupID); //logk
+        std::shared_ptr<Group> group_to_insert = groups.getData(ReplacementID); //logk
+
+        std::shared_ptr<Player> arr1[] = new std::shared_ptr<Player>[group_to_delete->count];
+        if(arr1 == nullptr)
+            return ALLOCATION_ERROR;
+        std::shared_ptr<Player> arr2[] = new std::shared_ptr<Player>[group_to_insert->count];
+        if(arr2 == nullptr) {
+            delete[] arr1;
+            return ALLOCATION_ERROR;
+        }
+        std::shared_ptr<Player> arr3[] = new std::shared_ptr<Player>[group_to_delete->count + group_to_insert->count];
+        if(arr3 == nullptr) {
+            delete[] arr1;
+            delete[] arr2;
+            return ALLOCATION_ERROR;
+        }
+
+        (group_to_delete->players).InOrderFillArrData(arr1, group_to_delete->count);
+        (group_to_insert->players).InOrderFillArrData(arr2, group_to_insert->count);
+        
+
+        //Merge the arrays into arr3 //log(n1+n2)
+        MergeGroups(arr1, group_to_delete->count, arr2, group_to_insert->count, arr3);
+
+        //Build an almost full tree - build a full tree and then delete leaves (reverse inorder) //log(n1+n2)???
+        //By inorder - inserting each player //log(n1+n2)
+
         return SUCCESS;
     }
 
@@ -263,11 +291,10 @@ namespace ds
         {
             *Players[i] = arr[i].id;
         }
-        delete arr;
+        delete[] arr;
         return SUCCESS;
     }
 
-    //need to complete
     StatusType PlayersManager::GetGroupsHighestLevel(int numOfGroups, int **Players)
     {
         if (numOfGroups < 1 || Players == nullptr)
@@ -292,12 +319,20 @@ namespace ds
             *Players[i] = arr[i]->id_max_level;
         }
         
-        delete arr;
+        delete[] arr;
         return SUCCESS;
     }
 
-    void PlayersManager::Quit(void** DS) //why pointer to pointer
+    void PlayersManager::MergeGroups(std::shared_ptr<Player> a[], int na, std::shared_ptr<Player> b[], int nb, std::shared_ptr<Player> c[])
     {
+        int ia = 0;
+        int ib = 0;
+        int ic = 0;
+        while (ia < na && ib < nb)
+        {
+            //maybe insert a pair to every player - to make comparison
+        }
+        
         
     }
 }

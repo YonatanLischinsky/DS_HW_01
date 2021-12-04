@@ -21,10 +21,12 @@ namespace ds
             int count;
             int count_not_empty;
 
+            void MergeGroups(std::shared_ptr<Player> a[], int na, std::shared_ptr<Player> b[], int nb, std::shared_ptr<Player> c[]);
+
         public:
             PlayersManager(); //C'tor
-            PlayersManager(PlayersManager& pm); //Copy c'tor - ??
-            ~PlayersManager() = default; //D'tor - ??
+            PlayersManager(PlayersManager& pm) = default; //Copy c'tor
+            ~PlayersManager() = default; //D'tor
             StatusType AddGroup(int GroupID);
             StatusType AddPlayer(int PlayerID, int GroupID, int Level);
             StatusType RemovePlayer(int PlayerID);
@@ -33,7 +35,6 @@ namespace ds
             StatusType GetHighestLevel(int GroupID, int *PlayerID);
             StatusType GetAllPlayersByLevel(int GroupID, int **Players, int *numOfPlayers);
             StatusType GetGroupsHighestLevel(int numOfGroups, int **Players);
-            void Quit(void** DS); //why pointer to pointer //yontan: nobody fucking know :O
     };
 }
 

@@ -7,11 +7,6 @@ namespace ds {
 
     Group::Group(int id) : id(id), max_level(-1), id_max_level(-1), count(0) { }
 
-    Group::~Group()
-    {
-        //Default?
-    }
-
     StatusType Group::AddPlayer(std::shared_ptr<Player> p, Pair key)
     {
         StatusType st = players.insert(p, key);
@@ -30,7 +25,7 @@ namespace ds {
 
     StatusType Group::RemovePlayer(Pair p)
     {
-        StatusType st = players.remove(p); //Remove function in Avl
+        StatusType st = players.remove(p); 
         if (st == SUCCESS)
         {
             count--;
@@ -41,7 +36,7 @@ namespace ds {
             }
             else if (key.id == id_max_level)
             {
-                Pair max = players.GetMaxKey(); //update the max in group - GetMaxKey in AVL
+                Pair max = players.GetMaxKey();
                 max_level = max.level;
                 id_max_level = max.id;
             }
