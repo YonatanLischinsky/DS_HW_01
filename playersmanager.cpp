@@ -1,8 +1,8 @@
-#include "library1.h"
-#include "group.h"
-#include "player.h"
-#include "avl.h"
-#include "pair.h"
+// #include "library1.h"
+// #include "group.h"
+// #include "player.h"
+// #include "avl.h"
+// #include "pair.h"
 #include "playersmanager.h"
 
 using namespace ds;
@@ -160,37 +160,90 @@ namespace ds
         if (GroupID <= 0 || ReplacementID <= 0) {
             return INVALID_INPUT;
         }
-        if(!(groups.search(GroupID)) || !(groups.search(ReplacementID))) { //logk
+        if(!(groups.search(GroupID)) || !(groups.search(ReplacementID))) { //O(logk)
             return FAILURE;
         }
 
-        std::shared_ptr<Group> group_to_delete = groups.getData(GroupID); //logk
-        std::shared_ptr<Group> group_to_insert = groups.getData(ReplacementID); //logk
 
-        std::shared_ptr<Player> arr1[] = new std::shared_ptr<Player>[group_to_delete->count];
+        std::shared_ptr<Group> group_to_delete = groups.getData(GroupID); //O(logk)
+        std::shared_ptr<Group> group_to_insert = groups.getData(ReplacementID); //O(logk)
+
+        int nD = group_to_delete->count;
+        int nI = group_to_insert->count;
+
+        if(nD == 0)
+        {
+            groups.remove(GroupID);
+            return SUCCESS;
+        }
+
+        std::shared_ptr<Player> arr1[];
+        std::shared_ptr<Player> arr2[];
+        std::shared_ptr<Player> arrMergedData[];
+        Pair arrMergedKey[];
+
+
+        arr1[] = new std::shared_ptr<Player>[nD];
         if(arr1 == nullptr)
             return ALLOCATION_ERROR;
-        std::shared_ptr<Player> arr2[] = new std::shared_ptr<Player>[group_to_insert->count];
+
+        arr2[] = new std::shared_ptr<Player>[ (nI > 0 ? nI : 1) ]; // if NI == 0 allocate array length of 1. (the logic should be the same...)
         if(arr2 == nullptr) {
             delete[] arr1;
             return ALLOCATION_ERROR;
         }
-        std::shared_ptr<Player> arr3[] = new std::shared_ptr<Player>[group_to_delete->count + group_to_insert->count];
-        if(arr3 == nullptr) {
+
+        arrMergedData[] = new std::shared_ptr<Player>[nD + nI];
+        if(arrMergedData == nullptr) {
             delete[] arr1;
             delete[] arr2;
             return ALLOCATION_ERROR;
         }
 
-        (group_to_delete->players).InOrderFillArrData(arr1, group_to_delete->count);
-        (group_to_insert->players).InOrderFillArrData(arr2, group_to_insert->count);
+        arrMergedKey[] = new Pair[nD + nI];
+        if(arrMergedKey == nullptr) {
+            delete[] arr1;
+            delete[] arr2;
+            delete[] arrMergedData;
+            return ALLOCATION_ERROR;
+        }
+
+        (group_to_delete->players).InOrderFillArrData(arr1, nD);
+        (group_to_insert->players).InOrderFillArrData(arr2, nI);
         
+        //Merge the arrays into arr3 //O(n1+n2)
+        MergeGroups(arr1, nD, arr2, nI, arrMergedData);
+    
 
-        //Merge the arrays into arr3 //log(n1+n2)
-        MergeGroups(arr1, group_to_delete->count, arr2, group_to_insert->count, arr3);
+        for (int i = 0; i < nI + nD; i++)
+        {
+            Pair p (arrMergedData[i]->level ,arrMergedData[i]->id);
+            arrMergedKey[i] = p;
+        }
+        
+        int treeHeight = ceil( log(nD+nI+1) ) - 1;      // [log(n1+n2+1)]-1
+        int countRemoveFromRight = (pow(2, treeHeight+1) - 1) - (nD + nI); // (2^(treeHeight+1)-1) - (n1+n2)
 
-        //Build an almost full tree - build a full tree and then delete leaves (reverse inorder) //log(n1+n2)???
-        //By inorder - inserting each player //log(n1+n2)
+        Avl<std::shared_ptr<Player>, Pair> emptyTree ( treeHeight ); //O(nI + nD)
+        emptyTree.reverseInOrderRemoveNodes(countRemoveFromRight);
+
+
+        emptyTree.InOrderFillArrData(arrMergedData, nI + nD); // //O(nI + nD)
+        emptyTree.InOrderFillArrKey(arrMergedKey, nI + nD); //O(nI + nD)
+
+        if((group_to_insert->max_level < group_to_delete->max_level) || group_to_insert->max_level == group_to_delete->max_level && 
+                                                                        group_to_insert->id_max_level > group_to_delete->id_max_level)
+        {
+            group_to_insert->max_level = group_to_delete->max_level;
+            group_to_insert->id_max_level = group_to_delete->id_max_level;
+        }
+        group_to_insert->count += nD;
+
+        groups.remove(GroupID); // O(log K)
+        not_empty_groups.remove(GroupID); // O(log K)
+
+        group_to_insert->players.deleteAllTree(); // O(nI)
+        group_to_insert->players = emptyTree; // ******** maybe todo: operator= in AVL.h ******************
 
         return SUCCESS;
     }
@@ -330,9 +383,26 @@ namespace ds
         int ic = 0;
         while (ia < na && ib < nb)
         {
-            //maybe insert a pair to every player - to make comparison
+            Pair p1(a[ia]->level, a[ia]->id);
+            Pair p2(b[ib]->level, b[ib]->id);
+
+            if(p1 < p2)
+            {
+                c[ic++] = a[ia++];
+            }
+            else
+            {
+                c[ic++] = b[ib++];
+            }
         }
-        
-        
+
+        while(ia < na)
+        {
+            c[ic++] = a[ia++];
+        }
+        while(ib< nb)
+        {
+            c[ic++] = b[ib++];
+        }
     }
 }
