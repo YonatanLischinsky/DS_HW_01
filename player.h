@@ -2,13 +2,17 @@
 #define PLAYER_H
 
 #include "avl.h"
+#include "pair.h"
 #include "group.h"
+//#include "playersmanager.h"
 
-using namespace std;
-using namespace ds;
 
-class Player
+namespace ds
 {
+    class Group;
+
+    class Player
+    {
     private:
         int id;
         int level;
@@ -21,9 +25,8 @@ class Player
         Player(Player& p) = default; //Copy c'tor
         ~Player() = default; //D'tor
 
+        friend class Group;
         friend class PlayersManager;
-};
-
-// Player::Player(int id, int lvl, std::shared_ptr<Group> g) : id(id), level(lvl), player_group(g) { }
-
+    };
+}
 #endif

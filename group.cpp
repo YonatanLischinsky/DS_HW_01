@@ -25,7 +25,7 @@ namespace ds {
 
     StatusType Group::RemovePlayer(Pair p)
     {
-        StatusType st = players.remove(p); 
+        StatusType st = players.remove(p);
         if (st == SUCCESS)
         {
             count--;
@@ -34,10 +34,10 @@ namespace ds {
                 max_level = -1;
                 id_max_level = -1;
             }
-            else if (key.id == id_max_level)
+            else if (p.id == id_max_level)
             {
                 Pair max = players.GetMaxKey();
-                max_level = max.level;
+                max_level = max.levels;
                 id_max_level = max.id;
             }
         }

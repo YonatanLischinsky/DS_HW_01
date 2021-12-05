@@ -4,10 +4,8 @@
 #include <memory>
 #include <stdio.h>
 #include <iostream>
-#include "library1.h"
 #include <math.h>
-
-
+#include "library1.h"
 
 namespace ds
 {
@@ -138,12 +136,13 @@ namespace ds
         K GetMaxKey();
         T getData(K key);
         void printInOrder(bool reverse);
-        bool search(K key);
         void reverseInOrderFillArr(K arr[]);
         void InOrderFillArrData(T arr[], int counter);
-        void InOrderFillArrKey( K arr[], int counter);
+        void InOrderFillArrKey(K arr[], int counter);
         void reverseInOrderRemoveNodes(int count);
         void deleteAllTree();
+        bool search(K key);
+
     private:
         std::shared_ptr<Node<T, K>> root;
 
@@ -158,11 +157,11 @@ namespace ds
         std::shared_ptr< Node<T, K> > findNode(std::shared_ptr<Node<T, K>> sub_root, K key);
         void HandleOneSonRemove(std::shared_ptr<Node<T, K>> nodeToRemove);
         std::shared_ptr<Node<T, K>> binaryTreeRemoveAlgo(std::shared_ptr<Node<T, K>> nodeToRemove);
-        void reverseInOrderFillArr_rec(K arr[], std::shared_ptr<Node<T,K>> n, int* i);
-        void InOrderFillArrData_rec(T arr[], std::shared_ptr<Node<T,K>> n, int* i, int count);
-        void InOrderFillArrKey_rec (K arr[], std::shared_ptr<Node<T,K>> n, int* i, int count);
-        void CreateEmptyFullTree_rec(int height, std::shared_ptr<Node<T,K>> n);
-        void reverseInOrderRemoveNodes_rec(std::shared_ptr<Node<T,K>> n, int* i, int count);
+        void reverseInOrderFillArr_rec(K arr[], std::shared_ptr<Node<T, K>> n, int* i);
+        void InOrderFillArrData_rec(T arr[], std::shared_ptr<Node<T, K>> n, int* i, int count);
+        void InOrderFillArrKey_rec(K arr[], std::shared_ptr<Node<T, K>> n, int* i, int count);
+        void CreateEmptyFullTree_rec(int height, std::shared_ptr<Node<T, K>> n);
+        void reverseInOrderRemoveNodes_rec(std::shared_ptr<Node<T, K>> n, int* i, int count);
 
     };
 
@@ -179,24 +178,24 @@ namespace ds
     template<class T, class K>
     Avl<T, K>::Avl(int height) : root(nullptr)
     {
-        if(height == 0)
+        if (height == 0)
             return;
-        
-        std::shared_ptr<Node<T,K>> r( new Node<T,K>(height));
+
+        std::shared_ptr<Node<T, K>> r(new Node<T, K>(height));
         root = r;
         CreateEmptyFullTree_rec(height, root);
     }
 
     template<class T, class K>
-    void Avl<T, K>::CreateEmptyFullTree_rec(int height, std::shared_ptr<Node<T,K>> n)
+    void Avl<T, K>::CreateEmptyFullTree_rec(int height, std::shared_ptr<Node<T, K>> n)
     {
-        if(height == 0 || n == nullptr)
+        if (height == 0 || n == nullptr)
         {
             return;
         }
 
-        std::shared_ptr<Node<T,K>> leftSon( new Node<T,K>(height-1));
-        std::shared_ptr<Node<T,K>> rightSon( new Node<T,K>(height-1));
+        std::shared_ptr<Node<T, K>> leftSon(new Node<T, K>(height - 1));
+        std::shared_ptr<Node<T, K>> rightSon(new Node<T, K>(height - 1));
 
         leftSon->father = n;
         rightSon->father = n;
@@ -217,7 +216,7 @@ namespace ds
     }
 
     template<class T, class K>
-    void Avl<T,K>::deleteAllTree()
+    void Avl<T, K>::deleteAllTree()
     {
         deleteTree(root);
     }
@@ -427,10 +426,10 @@ namespace ds
                     nodeToRemove->father->right = nodeToRemove->left;
             }
             nodeToRemove->left->father = nodeToRemove->father;
-            
+
             if (root == nodeToRemove)
                 root = nodeToRemove->left;
-            
+
         }
 
         nodeToRemove->left = nullptr;
@@ -730,9 +729,9 @@ namespace ds
     }
 
     template<class T, class K>
-    void Avl<T, K>::reverseInOrderFillArr_rec(K arr[], std::shared_ptr<Node<T,K>> n, int* i)
+    void Avl<T, K>::reverseInOrderFillArr_rec(K arr[], std::shared_ptr<Node<T, K>> n, int* i)
     {
-        if(n == nullptr)
+        if (n == nullptr)
             return;
 
         reverseInOrderFillArr_rec(arr, n->right, i);
@@ -751,38 +750,38 @@ namespace ds
     }
 
     template<class T, class K>
-    void Avl<T, K>::InOrderFillArrData_rec(T arr[], std::shared_ptr<Node<T,K>> n, int* i, int count)
+    void Avl<T, K>::InOrderFillArrData_rec(T arr[], std::shared_ptr<Node<T, K>> n, int* i, int count)
     {
-        if(n == nullptr || *i >= count)
+        if (n == nullptr || *i >= count)
             return;
 
-        InOrderFillArrData_rec(arr, n->left, i);
+        InOrderFillArrData_rec(arr, n->left, i, count);
 
         arr[*i] = n->data;
         *i = (*i) + 1;
 
-        InOrderFillArrData_rec(arr, n->right, i);
+        InOrderFillArrData_rec(arr, n->right, i, count);
     }
 
     template<class T, class K>
-    void Avl<T, K>::InOrderFillArrKey(K arr[] , int counter)
+    void Avl<T, K>::InOrderFillArrKey(K arr[], int counter)
     {
         int i = 0;
         InOrderFillArrKey_rec(arr, root, &i, counter);
     }
 
     template<class T, class K>
-    void Avl<T, K>::InOrderFillArrKey_rec (K arr[], std::shared_ptr<Node<T,K>> n, int* i, int count);
+    void Avl<T, K>::InOrderFillArrKey_rec(K arr[], std::shared_ptr<Node<T, K>> n, int* i, int count)
     {
-        if(n == nullptr || *i >= count)
+        if (n == nullptr || *i >= count)
             return;
 
-        InOrderFillArrKey_rec(arr, n->left, i);
+        InOrderFillArrKey_rec(arr, n->left, i, count);
 
         arr[*i] = n->key;
         *i = (*i) + 1;
 
-        InOrderFillArrKey_rec(arr, n->right, i);
+        InOrderFillArrKey_rec(arr, n->right, i, count);
     }
 
     template<class T, class K>
@@ -793,31 +792,31 @@ namespace ds
     }
 
     template<class T, class K>
-    void Avl<T, K>::reverseInOrderRemoveNodes_rec(std::shared_ptr<Node<T,K>> n, int* i, int count)
+    void Avl<T, K>::reverseInOrderRemoveNodes_rec(std::shared_ptr<Node<T, K>> n, int* i, int count)
     {
-        if(count == *i || n == nullptr || n->father == nullptr)
+        if (count == *i || n == nullptr || n->father == nullptr)
         {
             return;
         }
 
         reverseInOrderRemoveNodes_rec(n->right, i, count);
 
-        if(n->height == 0) // leaf
+        if (n->height == 0) // leaf
         {
-            if(n->father->left == n)
+            if (n->father->left == n)
                 n->father->left = nullptr;
             else
                 n->father->right = nullptr;
-           
+
             n->father->UpdateBF();
             n->father->UpdateHeight();
-            
+
             n->father = nullptr;
 
             *i = (*i) + 1;
         }
 
-        reverseInOrderRemoveNodes_rec(n->left,  i, count);
+        reverseInOrderRemoveNodes_rec(n->left, i, count);
     }
 
 #pragma endregion
