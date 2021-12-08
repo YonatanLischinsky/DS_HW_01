@@ -1,4 +1,3 @@
-#pragma once
 /****************************************************************************/
 /*                                                                          */
 /* This file contains the interface functions                               */

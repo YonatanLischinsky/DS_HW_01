@@ -5,28 +5,28 @@
 #include "player.h"
 #include "pair.h"
 
-namespace ds
+class Player;
+
+class Group
 {
-    class Player;
+private:
+    int id;
+    int max_level;
+    int id_max_level;
+    std::shared_ptr < Avl<std::shared_ptr<Player>, Pair> > players;
+    int count;
 
-    class Group
+public:
+    Group(int id); //C'tor
+    ~Group()
     {
-    private:
-        int id;
-        int max_level;
-        int id_max_level;
-        Avl<std::shared_ptr<Player>, Pair> players;
-        int count;
+        players->deleteAllTree();
+        players = nullptr;
+    }
+    StatusType AddPlayer(std::shared_ptr<Player> p, Pair key);
+    StatusType RemovePlayer(Pair p);
 
-    public:
-        Group(int id); //C'tor
-       // Group(const Group& group); //Copy c'tor
-        ~Group() = default; //D'tor
-        StatusType AddPlayer(std::shared_ptr<Player> p, Pair key);
-        StatusType RemovePlayer(Pair p);
-
-        friend class Player;
-        friend class PlayersManager;
-    };
-}
+    friend class Player;
+    friend class PlayersManager;
+};
 #endif

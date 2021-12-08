@@ -4,29 +4,28 @@
 #include "avl.h"
 #include "pair.h"
 #include "group.h"
-//#include "playersmanager.h"
 
+class Group;
 
-namespace ds
+class Player
 {
-    class Group;
+private:
+    int id;
+    int level;
+    std::shared_ptr<Group> player_group;
 
-    class Player
+public:
+    Player(int id, int lvl, std::shared_ptr<Group> g) : id(id), level(lvl), player_group(g)
+    { } //C'tor
+
+    Player(Player& p) = default; //Copy c'tor
+    ~Player()
     {
-    private:
-        int id;
-        int level;
-        std::shared_ptr<Group> player_group;
+        player_group = nullptr;
+    }
 
-    public:
-        Player(int id, int lvl, std::shared_ptr<Group> g) : id(id), level(lvl), player_group(g)
-        { } //C'tor
+    friend class Group;
+    friend class PlayersManager;
+};
 
-        Player(Player& p) = default; //Copy c'tor
-        ~Player() = default; //D'tor
-
-        friend class Group;
-        friend class PlayersManager;
-    };
-}
 #endif

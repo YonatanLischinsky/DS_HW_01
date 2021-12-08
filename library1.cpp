@@ -56,7 +56,7 @@ StatusType GetGroupsHighestLevel(void *DS, int numOfGroups, int **Players) {
 
 void Quit(void** DS) {
     if (DS == nullptr)
-        return INVALID_INPUT;
-    delete *((PlayersManager**)DS)); //dereference and cast
+        return ;
+    delete (*((PlayersManager**)DS)); //dereference and cast
     *DS = nullptr;
 }
