@@ -27,18 +27,18 @@ public:
     PlayersManager(PlayersManager& pm) = default; //Copy c'tor
     ~PlayersManager()
     {
-        ResetAllPlayersGroupPtr();
+        ResetAllPlayersGroupPtr(); //Inorder
 
-        players_by_id->deleteAllTree();
+        players_by_id->deleteAllTree(); //PostOrder
         players_by_id = nullptr;
 
-        players_by_level->deleteAllTree();
+        players_by_level->deleteAllTree(); //PostOrder
         players_by_level = nullptr;
 
-        groups->deleteAllTree();
+        groups->deleteAllTree(); //PostOrder
         groups = nullptr;
 
-        not_empty_groups->deleteAllTree();
+        not_empty_groups->deleteAllTree(); //PostOrder
         not_empty_groups = nullptr;
     }
     StatusType AddGroup(int GroupID);
