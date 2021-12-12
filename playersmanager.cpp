@@ -175,6 +175,10 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
         groups->remove(GroupID);
         return SUCCESS;
     }
+    if(nI != 0)
+    {
+        count_not_empty--;
+    }
 
     std::shared_ptr<Player>* arr1 = new std::shared_ptr<Player>[nD];
     if (arr1 == nullptr)
@@ -216,17 +220,11 @@ StatusType PlayersManager::ReplaceGroup(int GroupID, int ReplacementID)
     int treeHeight = ceil(log2(nD + nI + 1)) - 1;      // [log(n1+n2+1)]-1
     int countRemoveFromRight = (pow(2, treeHeight + 1) - 1) - (nD + nI); // (2^(treeHeight+1)-1) - (n1+n2)
 
-
-
-
-
     std::shared_ptr<Avl<std::shared_ptr<Player>, Pair>> emptyTree (new Avl<std::shared_ptr<Player>, Pair>(treeHeight)); //O(nI + nD)
     emptyTree->reverseInOrderRemoveNodes(countRemoveFromRight);
     emptyTree->InOrderFillArrData(arrMergedData, nI + nD, false); // //O(nI + nD)
     emptyTree->InOrderFillArrKey(arrMergedKey, nI + nD, false); //O(nI + nD)
 
-    //if(group_to_insert->players != nullptr) // 
-    //    group_to_insert->players->deleteAllTree(); // O(nI)
     group_to_insert->players = emptyTree;
 
     if ((group_to_insert->max_level < group_to_delete->max_level) || group_to_insert->max_level == group_to_delete->max_level &&
